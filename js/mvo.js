@@ -3,7 +3,15 @@ $(function(){
     var model = {
         init: function() {
             if (!localStorage.cats) {
-                localStorage.cats = JSON.stringify([]);
+                var models = [];
+                for (var i = 1; i <= 5; i ++){
+                    models.push({
+                        catName: "kitten" + i,
+                        catLink: "static/img/kitten" + i + ".jpg",
+                        catScore: 0
+                    });
+                }
+                localStorage.cats = JSON.stringify(models);
             }
         },
         add: function(obj) {
@@ -18,16 +26,17 @@ $(function(){
 
 
     var octopus = {
-        addNewCat: function(catName, ) {
+        addNewCat: function(catName) {
             model.add({
                 catName: newCat,
-                catLink:catName + ".jpg"
+                catLink: "static/img/" + catName + ".jpg",
+                catScore: 0
             });
             view.render();
         },
 
         getCats: function() {
-            return model.getModel().reverse();
+            return model.getModel();
         },
 
         init: function() {
@@ -39,25 +48,16 @@ $(function(){
 
     var view = {
         init: function() {
-            this.noteList = $('#notes');
-            var newNoteForm = $('#new-note-form');
-            var newNoteContent = $('#new-note-content');
-            newNoteForm.submit(function(e){
-                octopus.addNewNote(newNoteContent.val());
-                newNoteContent.val('');
-                e.preventDefault();
-            });
+            this.catLinks = $('.cat-links');
+            this.catDisplay = $('.cat-display');
             view.render();
         },
         render: function(){
-            var htmlStr = '';
-            octopus.getNotes().forEach(function(note){
-                htmlStr += '<li class="note">'+
-                        '<span class = "note-date">' +  new Date(note.date).toString() + '</span>' + 
-                        note.content + 
-                    '</li>';
+            var linkStr = '';
+            octopus.getCats().forEach(function(cat){
+                linkStr += '<button type = "button" class="note">' + cat.catName + '</button>';
             });
-            this.noteList.html( htmlStr );
+            this.catLinks.html( linkStr );
         }
     };
 
