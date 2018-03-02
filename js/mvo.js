@@ -9,6 +9,7 @@ $(function(){
                         catName: "kitten" + i,
                         catLink: "static/img/kitten" + i + ".jpg",
                         catScore: 0
+
                     });
                 }
                 localStorage.cats = JSON.stringify(models);
@@ -54,12 +55,28 @@ $(function(){
         },
         render: function(){
             var linkStr = '';
+            var cats = [];
             octopus.getCats().forEach(function(cat){
-                linkStr += '<button type = "button" class="note">' + cat.catName + '</button>';
+                linkStr += '<button type = "button" id="'+ cat.catName +'">' + cat.catName + '</button>';
+                cats.push(cat);
             });
             this.catLinks.html( linkStr );
+            var display = this.catDisplay;
+            var buttons = $('button');
+            for (var i = 0; i < buttons.length; i ++){
+                var cat = cats[i];
+                $('#' + "kitten" + (i+1)).click((function(catCopy){
+                    return function(){
+                        display.html('<img src ="' + catCopy.catLink + '">');
+                    }
+                    
+                })(cat));
+
+            };
         }
     };
 
     octopus.init();
+
+
 });
