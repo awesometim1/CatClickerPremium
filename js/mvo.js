@@ -4,6 +4,7 @@ $(function(){
         init: function() {
             if (!localStorage.cats) {
                 var models = [];
+                //Initialize all of the cats
                 for (var i = 1; i <= 5; i ++){
                     models.push({
                         catName: "kitten" + i,
@@ -15,9 +16,9 @@ $(function(){
                 localStorage.cats = JSON.stringify(models);
             }
         },
-        add: function(obj) {
+        addScore: function(kitty) {
             var data = JSON.parse(localStorage.cats);
-            data.push(obj);
+            console.log(data);
             localStorage.cats = JSON.stringify(data);
         },
         getModel: function() {
@@ -43,6 +44,9 @@ $(function(){
         init: function() {
             model.init();
             view.init();
+        },
+        incScore: function(kitty){
+            model.addScore(kitty);
         }
     };
 
@@ -63,16 +67,26 @@ $(function(){
             this.catLinks.html( linkStr );
             var display = this.catDisplay;
             var buttons = $('button');
+            display.html('<img class = "display" src ="">');
             for (var i = 0; i < buttons.length; i ++){
                 var cat = cats[i];
+                //Select all of the buttons by id and add eventlistener onClick()
                 $('#' + "kitten" + (i+1)).click((function(catCopy){
                     return function(){
-                        display.html('<img src ="' + catCopy.catLink + '">');
+                        $('.cat-display').prepend('<h1>' + catCopy.catName + '</h1>')
+                        $('.display').attr('src', catCopy.catLink);
+                        $('.cat-display').append('<h1 class = "score">' + catCopy.catScore + '</h1>');
                     }
                     
                 })(cat));
 
             };
+            $('.display').click(function(){
+                var idNum = parseInt($('.display').attr("src").slice(17));
+                octopus.incScore(idNum);
+                var score = $('.score').html();
+                $('.score').html("" + (parseInt(score) + 1));
+            });
         }
     };
 
