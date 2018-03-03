@@ -35,24 +35,15 @@ $(function(){
 
 
     var octopus = {
-        addNewCat: function(catName) {
-            model.add({
-                catName: newCat,
-                catLink: "static/img/" + catName + ".jpg",
-                catScore: 0
-            });
-            view.render();
-        },
-
-        getCats: function() {
-            return model.getModel();
-        },
-
         init: function() {
 
             model.init();
             model.currentCat = model.getModel()[0];
-            view.init();
+            nameView.init();
+            catView.init();
+        },
+        getCats: function() {
+            return model.getModel();
         },
         incScore: function(id){
             model.addScore(id);
@@ -74,44 +65,15 @@ $(function(){
     };
 
 
-    var view = {
+    var catView = {
         init: function() {
-            this.catLinks = $('.cat-links');
             this.catDisplay = $('.cat-display');
-            view.render();
+            this.render();
         },
         render: function(){
-            var linkStr = '';
-            var cats = [];
-            octopus.getCats().forEach(function(cat){
-                linkStr += '<button type = "button" id="'+ cat.catName +'">' + cat.catName + '</button>';
-                cats.push(cat);
-            });
-            this.catLinks.html( linkStr );
             var display = this.catDisplay;
             var buttons = $('button');
             display.html('<img class = "display" src ="">');
-
-            // Add event Listeners for cat buttons
-            for (var i = 0; i < buttons.length; i ++){
-                var cat = cats[i];
-                //Select all of the buttons by id and add eventlistener onClick()
-                $('#' + "kitten" + (i+1)).click((function(catCopy){
-                    return function(){
-                        if ($('h1').length > 1){
-                            $('h1')[0].remove();
-                            $('h1')[0].remove();
-                        }
-                        $('.cat-display').prepend('<h1>' + catCopy.catName + '</h1>')
-                        $('.display').attr('src', catCopy.catLink);
-                        $('.cat-display').append('<h1 class = "score">' + catCopy.catScore + '</h1>');
-                        octopus.setCurrentCat(catCopy);
-                        catCopy = octopus.getCurrentCat();
-                    }
-                    
-                })(cat));
-
-            }; //end for
 
             // Add all eventlisteners
             $('.display').click(function(){
@@ -128,21 +90,65 @@ $(function(){
                 $('#url').attr('placeholder', currentCat.catLink);
                 $('#clicks').attr('placeholder', currentCat.catScore);
             })
-            $("#cancel").click(function(){
+            $('#cancel').click(function(){
                 $('.form').css('display', "none");
             })
             $('#submit').click(function(){
-                $('#name').attr('placeholder')
-                $('#url').html();
-                $('#clicks').html();
                 //Get all inputs
-                var name = $('#name').html();
-                var url = $('#url').html();
-                var clicks = $('#clicks').html();
+                var name = $('#name').val();
+                var url = $('#url').val();
+                var clicks = $('#clicks').val();
+                var currentCat = octopus.getCurrentCat();
+                currentCat.catName = (name.length < 1) ? currentCat.catName:name;
+                currentCat.catLink = (url.length < 1) ? currentCat.catLink:url;
+                currentCat.catScore = (clicks.length < 1) ? currentCat.catScore:clicks;
+                nameView.render();
+                catView.render();
+                $('.form').css("display", "none");
+
+                $('.cat-display').prepend('<h1>' + currentCat.catName + '</h1>')
+                $('.display').attr('src', currentCat.catLink);
+                $('.cat-display').append('<h1 class = "score">' + currentCat.catScore + '</h1>');
+
             })
 
         }//end render
-    };//end view
+    };//end catView
+    var nameView = {
+        init: function() {
+            this.catLinks = $('.cat-links');
+            this.render();
+        },
+        render: function(){
+            var linkStr = '';
+            cats = octopus.getCats();
+            for (var i = 0; i < cats.length ; i ++){
+                linkStr += '<button type = "button" id="'+ i +'">' + cats[i].catName + '</button>';
+            }
+            this.catLinks.html( linkStr );
+            var buttons = $('button');
+            // Add event Listeners for cat buttons
+            for (var i = 0; i < buttons.length; i ++){
+                var cat = cats[i];
+                //Select all of the buttons by id and add eventlistener onClick()
+                $('#' + i).click((function(catCopy){
+                    return function(){
+                        if ($('h1').length > 1){
+                            $('h1')[0].remove();
+                            $('h1')[0].remove();
+                        }
+                        $('.cat-display').prepend('<h1>' + catCopy.catName + '</h1>')
+                        $('.display').attr('src', catCopy.catLink);
+                        $('.cat-display').append('<h1 class = "score">' + catCopy.catScore + '</h1>');
+                        octopus.setCurrentCat(catCopy);
+
+                    }
+                    
+                })(cat));
+
+            }; //end for
+        }//end render
+    };//end nameView
 
     octopus.init();
 
