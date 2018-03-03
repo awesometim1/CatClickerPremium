@@ -1,6 +1,7 @@
 $(function(){
 
     var model = {
+        currentCat: null,
         init: function() {
             if (!localStorage.cats) {
                 var models = [];
@@ -48,7 +49,9 @@ $(function(){
         },
 
         init: function() {
+
             model.init();
+            model.currentCat = model.getModel()[0];
             view.init();
         },
         incScore: function(id){
@@ -61,6 +64,12 @@ $(function(){
                     return cats[i];
                 }
             };//end for
+        },
+        getCurrentCat: function(){
+            return model.currentCat;
+        },
+        setCurrentCat: function(cat){
+            model.currentCat = cat;
         }
     };
 
@@ -82,6 +91,8 @@ $(function(){
             var display = this.catDisplay;
             var buttons = $('button');
             display.html('<img class = "display" src ="">');
+
+            // Add event Listeners for cat buttons
             for (var i = 0; i < buttons.length; i ++){
                 var cat = cats[i];
                 //Select all of the buttons by id and add eventlistener onClick()
@@ -94,20 +105,42 @@ $(function(){
                         $('.cat-display').prepend('<h1>' + catCopy.catName + '</h1>')
                         $('.display').attr('src', catCopy.catLink);
                         $('.cat-display').append('<h1 class = "score">' + catCopy.catScore + '</h1>');
-                        catCopy = octopus.matchCat(catCopy.catName);
-                        
+                        octopus.setCurrentCat(catCopy);
+                        catCopy = octopus.getCurrentCat();
                     }
                     
                 })(cat));
 
             }; //end for
+
+            // Add all eventlisteners
             $('.display').click(function(){
-                var idNum = parseInt($('.display').attr("src").slice(17));
+                var idNum = parseInt($('.display').attr('src').slice(17));
                 octopus.incScore(idNum);
                 var score = $('.score').html();
                 $('.score').html("" + (parseInt(score) + 1));
                 
             });
+            $('#admin').click(function(){
+                $('.form').css('display', "inline-block");
+                var currentCat = octopus.getCurrentCat();
+                $('#name').attr('placeholder', currentCat.catName);
+                $('#url').attr('placeholder', currentCat.catLink);
+                $('#clicks').attr('placeholder', currentCat.catScore);
+            })
+            $("#cancel").click(function(){
+                $('.form').css('display', "none");
+            })
+            $('#submit').click(function(){
+                $('#name').attr('placeholder')
+                $('#url').html();
+                $('#clicks').html();
+                //Get all inputs
+                var name = $('#name').html();
+                var url = $('#url').html();
+                var clicks = $('#clicks').html();
+            })
+
         }//end render
     };//end view
 
